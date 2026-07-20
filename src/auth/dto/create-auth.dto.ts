@@ -13,3 +13,14 @@ export class CreateAuthDto {
   @Length(8, 200)
   password!: string;
 }
+
+export class CreateLoginDto {
+  @IsString()
+  @IsEmail()
+  @Length(12, 150)
+  email!: string;
+
+  @IsString()
+  @Length(8, 200)
+  password!: string;
+}
