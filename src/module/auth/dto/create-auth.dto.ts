@@ -24,3 +24,14 @@ export class CreateLoginDto {
   @Length(8, 200)
   password!: string;
 }
+
+export class VerifyDto {
+  @IsString()
+  @IsEmail()
+  @Length(12, 150)
+  email!: string;
+
+  @IsString()
+  @Length(6, 6)
+  code!:string
+}

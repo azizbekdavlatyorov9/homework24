@@ -1,11 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { Auth } from './entities/auth.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports:[ SequelizeModule.forFeature([Auth])],
+  imports:[
+     TypeOrmModule.forFeature([Auth]),
+     JwtModule.register({
+      global: true,
+      secret: process.env.SECRET_KEY,
+      signOptions: { expiresIn: '6000s' },
+    }),
+],
   controllers: [AuthController],
   providers: [AuthService],
 })
