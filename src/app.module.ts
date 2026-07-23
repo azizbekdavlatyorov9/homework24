@@ -3,7 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './module/auth/auth.module';
 import { Auth } from './module/auth/entities/auth.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArticlesModule } from './articles/articles.module';
+import { Article } from './module/articles/entities/article.entity';
+import { ArticlesModule } from './module/articles/articles.module';
 
 
 @Module({
@@ -16,7 +17,7 @@ import { ArticlesModule } from './articles/articles.module';
       port:5432,
       database:process.env.DB_NAME,
       password:process.env.DB_PASSWORD,
-      entities:[Auth],
+      entities:[Auth, Article],
       autoLoadEntities:true,
       synchronize:true
     }),
@@ -24,11 +25,6 @@ import { ArticlesModule } from './articles/articles.module';
     ArticlesModule
   ],
   controllers: [],
-  providers: [
-     {
-    provide: APP_GUARD,
-    useClass: AuthGuard,
-  },
-  ],
+  providers: [],
 })
 export class AppModule {}
