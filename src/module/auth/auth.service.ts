@@ -26,20 +26,20 @@ export class AuthService {
 
   private transporter: nodemailer.Transporter;
 
-constructor(
-  @InjectRepository(Auth)
-  private authRepo: Repository<Auth>,
-  private jwtService: JwtService,
-  private readonly config: ConfigService,
-) {
-  this.transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: this.config.get<string>("GOOGLE_EMAIL"),
-      pass: this.config.get<string>("GOOGLE_PASS"),
-    },
-  });
-}
+  constructor(
+    @InjectRepository(Auth)
+    private authRepo: Repository<Auth>,
+    private jwtService: JwtService,
+    private readonly config: ConfigService,
+  ) {
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: this.config.get<string>("GOOGLE_EMAIL"),
+        pass: this.config.get<string>("GOOGLE_PASS"),
+      },
+    });
+  }
   async register(createAuthDto: CreateAuthDto): Promise<string> {
     const { username, email, password } = createAuthDto;
 

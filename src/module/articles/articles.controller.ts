@@ -1,46 +1,75 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ArticlesService } from './articles.service';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
-import { AuthGuard } from 'src/common/guards/auth.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpCode,
+} from "@nestjs/common";
+import { ArticlesService } from "./articles.service";
+import { CreateArticleDto } from "./dto/create-article.dto";
+import { UpdateArticleDto } from "./dto/update-article.dto";
+import { AuthGuard } from "src/common/guards/auth.guard";
+import { Roles } from "src/common/decorators/roles.decorator";
+import { UserRole } from "src/common/enums/user-role";
+import { RolesGuard } from "src/common/guards/roles.guard";
+import {
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from "@nestjs/swagger";
 
-
+@ApiBearerAuth("JWT-auth")
+@ApiInternalServerErrorResponse({ description: "Internal Server Error" })
 @UseGuards(AuthGuard)
-@Controller('articles')
+@Controller("articles")
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
+  @ApiOkResponse({ type: CreateArticleDto })
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.USER)
+  @HttpCode(201)
   @Post("create_article")
   create(@Body() createArticleDto: CreateArticleDto) {
     return this.articlesService.create(createArticleDto);
   }
 
+  @ApiOkResponse({ type: CreateArticleDto })
+  @HttpCode(200)
   @Get("get_all_articles")
   findAll() {
     return this.articlesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ApiNotFoundResponse({ description: "Article Not Found" })
+  @HttpCode(200)
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.articlesService.findOne(+id);
   }
 
+  @ApiNotFoundResponse({ description: "Article Not Found" })
+  @ApiOkResponse({ description: "Updated Article" })
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
+  @HttpCode(200)
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
     return this.articlesService.update(+id, updateArticleDto);
   }
 
+  @ApiNotFoundResponse({ description: "Article Not Found" })
+  @ApiOkResponse({ description: "Deleted Article" })
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @HttpCode(200)
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.articlesService.remove(+id);
   }
 }

@@ -38,12 +38,12 @@ export class ArticlesService {
     return "Updated Article";
   }
 
-  async remove(id: number):Promise<string> {
-    const foundedArticle = await this.articleRepo.findOne({where:{id}})
+  async remove(id: number): Promise<string> {
+    const foundedArticle = await this.articleRepo.findOne({ where: { id } });
 
-    if(!foundedArticle) throw new NotFoundException("Article Not Found")
-      
-    await this.articleRepo.remove(foundedArticle)
-    return  "Deleted Article"
-  } 
+    if (!foundedArticle) throw new NotFoundException("Article Not Found");
+
+    await this.articleRepo.remove(foundedArticle);
+    return "Deleted Article";
+  }
 }
