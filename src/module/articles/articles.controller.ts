@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   HttpCode,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import { ArticlesService } from "./articles.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
@@ -18,10 +20,16 @@ import { UserRole } from "src/common/enums/user-role";
 import { RolesGuard } from "src/common/guards/roles.guard";
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
 } from "@nestjs/swagger";
+import { CreateArticleFileDto } from "./dto/create-article-file-dto";
+import { FileInterceptor } from "@nestjs/platform-express";
+import {diskStorage} from "multer"
+import * as path from "path"
 
 @ApiBearerAuth("JWT-auth")
 @ApiInternalServerErrorResponse({ description: "Internal Server Error" })
@@ -33,10 +41,25 @@ export class ArticlesController {
   @ApiOkResponse({ type: CreateArticleDto })
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.USER)
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({type: CreateArticleFileDto})
   @HttpCode(201)
   @Post("create_article")
-  create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articlesService.create(createArticleDto);
+  @UseInterceptors(
+    FileInterceptor("backgroundImage", {
+      storage:diskStorage({
+        destination: path.join(process.cwd(), "uploads"),
+        filename:(req, file, cb) => {
+          const uniqueSuffix = `${file.fieldname}${Date.now()}`
+          const ext = path.extname(file.originalname)
+
+          cb(null, `${uniqueSuffix}${ext  }`)
+        }
+      })
+    })
+  )
+  create(@Body() createArticleDto: CreateArticleFileDto, @UploadedFile() file:Express.Multer.File) {
+    return this.articlesService.create(createArticleDto, file);
   }
 
   @ApiOkResponse({ type: CreateArticleDto })

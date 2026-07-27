@@ -9,4 +9,5 @@ export class CreateArticleDto {
   @ApiProperty({default:"The best programming language in the world"})
   @IsString()
   text!: string;
+  
 }

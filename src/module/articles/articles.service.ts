@@ -4,6 +4,7 @@ import { UpdateArticleDto } from "./dto/update-article.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Article } from "./entities/article.entity";
 import { Repository } from "typeorm";
+import { CreateArticleFileDto } from "./dto/create-article-file-dto";
 
 @Injectable()
 export class ArticlesService {
@@ -11,8 +12,10 @@ export class ArticlesService {
     @InjectRepository(Article) private articleRepo: Repository<Article>,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto): Promise<Article> {
+  async create(createArticleDto: CreateArticleDto, file:Express.Multer.File): Promise<Article> {
     const article = this.articleRepo.create(createArticleDto);
+
+    article.backgroundImage = `http://localhost:4001/uploads/${file.filename}`
     return await this.articleRepo.save(article);
   }
 
