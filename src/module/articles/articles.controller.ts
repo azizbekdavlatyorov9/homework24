@@ -10,6 +10,7 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from "@nestjs/common";
 import { ArticlesService } from "./articles.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
@@ -58,8 +59,8 @@ export class ArticlesController {
       })
     })
   )
-  create(@Body() createArticleDto: CreateArticleFileDto, @UploadedFile() file:Express.Multer.File) {
-    return this.articlesService.create(createArticleDto, file);
+  create(@Body() createArticleDto: CreateArticleFileDto, @UploadedFile() file:Express.Multer.File, @Req() request:any) {
+    return this.articlesService.create(createArticleDto, file, request);
   }
 
   @ApiOkResponse({ type: CreateArticleDto })
@@ -76,15 +77,15 @@ export class ArticlesController {
     return this.articlesService.findOne(+id);
   }
 
-  @ApiNotFoundResponse({ description: "Article Not Found" })
-  @ApiOkResponse({ description: "Updated Article" })
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
-  @HttpCode(200)
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articlesService.update(+id, updateArticleDto);
-  }
+  // @ApiNotFoundResponse({ description: "Article Not Found" })
+  // @ApiOkResponse({ description: "Updated Article" })
+  // @UseGuards(RolesGuard)
+  // @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
+  // @HttpCode(200)
+  // @Patch(":id")
+  // update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
+  //   return this.articlesService.update(+id, updateArticleDto);
+  // }
 
   @ApiNotFoundResponse({ description: "Article Not Found" })
   @ApiOkResponse({ description: "Deleted Article" })

@@ -10,7 +10,7 @@ export class Tag extends BaseEntity {
   title!: string;
 
   //relations
-  @ManyToOne(() => Auth, (user) => user.tags)
+  @ManyToOne(() => Auth, (user) => user.tags, {nullable:false, cascade: false})
   @JoinColumn({name:"author_id"})
   author!: Auth;
 
