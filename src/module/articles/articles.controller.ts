@@ -77,15 +77,15 @@ export class ArticlesController {
     return this.articlesService.findOne(+id);
   }
 
-  // @ApiNotFoundResponse({ description: "Article Not Found" })
-  // @ApiOkResponse({ description: "Updated Article" })
-  // @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
-  // @HttpCode(200)
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
-  //   return this.articlesService.update(+id, updateArticleDto);
-  // }
+  @ApiNotFoundResponse({ description: "Article Not Found" })
+  @ApiOkResponse({ description: "Updated Article" })
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
+  @HttpCode(200)
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
+    return this.articlesService.update(+id, updateArticleDto);
+  }
 
   @ApiNotFoundResponse({ description: "Article Not Found" })
   @ApiOkResponse({ description: "Deleted Article" })

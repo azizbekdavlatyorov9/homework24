@@ -38,8 +38,8 @@ export class ArticlesService {
     return this.articleRepo.find({
       relations: {
         author: true,
-        tags:true
-      }
+        tags: true,
+      },
     });
   }
 
@@ -50,16 +50,24 @@ export class ArticlesService {
     return foundedArticle;
   }
 
-  // async update(
-  //   id: number,
-  //   updateArticleDto: UpdateArticleDto,
-  // ): Promise<string> {
-  //   const foundedArticle = await this.articleRepo.findOne({ where: { id } });
+  async update(
+    id: number,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<string> {
+    const foundedArticle = await this.articleRepo.findOne({ where: { id } });
 
-  //   if (!foundedArticle) throw new NotFoundException("Article Not Found");
-  //   await this.articleRepo.update(id, updateArticleDto);
-  //   return "Updated Article";
-  // }
+    if (!foundedArticle) throw new NotFoundException("Article Not Found");
+
+    foundedArticle.title = updateArticleDto.title ?? foundedArticle.title;
+    foundedArticle.text = updateArticleDto.text ?? foundedArticle.text;
+
+    if (updateArticleDto.tags) {
+      foundedArticle.tags = updateArticleDto.tags.map((id) => ({ id }) as Tag);
+    }
+
+    await this.articleRepo.save(foundedArticle)
+    return "Updated Article";
+  }
 
   async remove(id: number): Promise<string> {
     const foundedArticle = await this.articleRepo.findOne({ where: { id } });
