@@ -7,6 +7,8 @@ import { Article } from './module/articles/entities/article.entity';
 import { ArticlesModule } from './module/articles/articles.module';
 import { Tag } from './module/tag/entities/tag.entity';
 import { TagModule } from './module/tag/tag.module';
+import { ArticleImage } from './module/article-images/entities/article-image.entity';
+import { ArticleImagesModule } from './module/article-images/article-images.module';
 
 
 @Module({
@@ -19,13 +21,14 @@ import { TagModule } from './module/tag/tag.module';
       port:5432,
       database:process.env.DB_NAME,
       password:process.env.DB_PASSWORD,
-      entities:[Auth, Article, Tag],
+      entities:[Auth, Article, Tag, ArticleImage],
       autoLoadEntities:true,
       synchronize:true
     }),
     AuthModule,
     ArticlesModule,
-    TagModule
+    TagModule,
+    ArticleImagesModule
   ],
   controllers: [],
   providers: [],

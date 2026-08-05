@@ -1,3 +1,4 @@
+import { QueryDto } from './dto/query.dto';
 import {
   Controller,
   Get,
@@ -11,6 +12,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  Query,
 } from "@nestjs/common";
 import { ArticlesService } from "./articles.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
@@ -66,8 +68,8 @@ export class ArticlesController {
   @ApiOkResponse({ type: CreateArticleDto })
   @HttpCode(200)
   @Get("get_all_articles")
-  findAll() {
-    return this.articlesService.findAll();
+  findAll(@Query() queryDto:QueryDto) {
+    return this.articlesService.findAll(queryDto);
   }
 
   @ApiNotFoundResponse({ description: "Article Not Found" })

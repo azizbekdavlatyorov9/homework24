@@ -6,6 +6,7 @@ import { Article } from "./entities/article.entity";
 import { In, Repository } from "typeorm";
 import { CreateArticleFileDto } from "./dto/create-article-file-dto";
 import { Tag } from "../tag/entities/tag.entity";
+import { QueryDto } from "./dto/query.dto";
 
 @Injectable()
 export class ArticlesService {
@@ -34,13 +35,36 @@ export class ArticlesService {
     return await this.articleRepo.save(article);
   }
 
-  async findAll(): Promise<Article[]> {
-    return this.articleRepo.find({
-      relations: {
-        author: true,
-        tags: true,
-      },
-    });
+  async findAll(queryDto: QueryDto) {
+    const { page = 1, limit = 10, search } = queryDto;
+
+    const myQuery = this.articleRepo
+      .createQueryBuilder("article")
+      .leftJoinAndSelect("article.tags", "tags")
+      .where(`article.deletedAt is null `);
+
+    if (search) {
+      myQuery.andWhere(
+        `(article.title ILIKE :search
+    OR article.text ILIKE :search
+    OR tags.title ILIKE :search)`,
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    const total = await myQuery.getCount();
+
+    const result = await myQuery
+      .orderBy("article.createdAt", "DESC")
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    return {
+      result,
+    };
   }
 
   async findOne(id: number): Promise<Article> {
@@ -65,7 +89,7 @@ export class ArticlesService {
       foundedArticle.tags = updateArticleDto.tags.map((id) => ({ id }) as Tag);
     }
 
-    await this.articleRepo.save(foundedArticle)
+    await this.articleRepo.save(foundedArticle);
     return "Updated Article";
   }
 
@@ -77,4 +101,7 @@ export class ArticlesService {
     await this.articleRepo.softDelete(id);
     return "Deleted Article";
   }
+}
+function getMany() {
+  throw new Error("Function not implemented.");
 }
