@@ -43,9 +43,9 @@ export class ArticleImagesService {
     return result;
   }
 
-  // findAll() {
-  //   return `This action returns all articleImages`;
-  // }
+  async findAll() {
+    return await this.articleImageRepo.find()
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} articleImage`;

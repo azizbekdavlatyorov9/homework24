@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode } from "@nestjs/common";
+import { Controller, Post, Body, HttpCode, UseGuards, Req, Get } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import {
   CreateAuthDto,
@@ -11,7 +11,7 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { describe } from "node:test";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiInternalServerErrorResponse({ description: "Internal Server Error" })
 @Controller("auth")
@@ -44,4 +44,20 @@ export class AuthController {
   verify(@Body() verifyDto: VerifyDto) {
     return this.authService.verify(verifyDto);
   }
+
+
+  //Google
+  @Get("google")
+  @UseGuards(AuthGuard("google"))
+  async google(@Req() req) {
+
+  }
+
+  @Get("google/callback")
+  @UseGuards(AuthGuard("google"))
+  async googleRedirect(@Req() req) {
+    
+    return 
+  }
+
 }

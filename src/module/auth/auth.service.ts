@@ -15,6 +15,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { error } from "console";
 
 @Injectable()
 export class AuthService {
@@ -82,23 +83,27 @@ export class AuthService {
       Math.floor(Math.random() * 10),
     ).join("");
 
-    const compare = await bcrypt.compare(password, foundedUser.password);
+    if (foundedUser.password) {
+      const compare = await bcrypt.compare(password, foundedUser.password);
 
-    if (compare) {
-      await this.authRepo.update(foundedUser.id, {
-        code: randomCode,
-        otpTime: Date.now() + 120000,
-      });
+      if (compare) {
+        await this.authRepo.update(foundedUser.id, {
+          code: randomCode,
+          otpTime: Date.now() + 120000,
+        });
 
-      await this.transporter.sendMail({
-        from: "azizbekdavlatyorov9@gmail.com",
-        to: email,
-        subject: "Lesson",
-        text: `${randomCode}`,
-      });
-      return "Please check your email";
+        await this.transporter.sendMail({
+          from: "azizbekdavlatyorov9@gmail.com",
+          to: email,
+          subject: "Lesson",
+          text: `${randomCode}`,
+        });
+        return "Please check your email";
+      } else {
+        throw new UnauthorizedException("Invalid Password");
+      }
     } else {
-      throw new UnauthorizedException("Invalid Password");
+      throw new UnauthorizedException("Password not found");
     }
   }
 
@@ -127,5 +132,42 @@ export class AuthService {
     return {
       token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  //google-auth
+  async google(googleData: any) {
+    const { email, profilePicture, lastname, firstname } = googleData;
+
+    const foundedUser = await this.authRepo.findOne({ where: { email } });
+
+    if (foundedUser) {
+      const payload = {
+        id: foundedUser.id,
+        email: foundedUser.email,
+        role: foundedUser.role,
+      };
+
+      return {
+        token: await this.jwtService.signAsync(payload),
+      };
+    } else {
+      const user = this.authRepo.create({
+        email,
+        lastname,
+        firstname,
+        profilePicture,
+      });
+  
+      await this.authRepo.save(user);  
+
+      const result = await this.authRepo.findOne({where:{email}})
+
+      return {
+        token: await this.jwtService.signAsync({id:result?.id, email:result?.email, role:result?.role }),
+      };
+    
+    }
+    
+  
   }
 }

@@ -55,7 +55,7 @@ export class ArticleImagesController {
     }),
   )
   create(
-    @Body() createArticleImageDto: CreateArticleImageDto,
+    @Body() createArticleImageDto: CreateArticleImageFileDto,
     @UploadedFiles() file: Express.Multer.File[],
     
   ) {
@@ -65,10 +65,10 @@ export class ArticleImagesController {
     );
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.articleImagesService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.articleImagesService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
